@@ -11,4 +11,16 @@ export default [
     to: '/posts',
     icon: 'cil-description',
   },
+  {
+    component: 'CNavItem',
+    name: 'Теги',
+    to: '/tags',
+    icon: 'cil-description',
+  },
+  {
+    component: 'CNavItem',
+    name: 'Проекты',
+    to: '/projects',
+    icon: 'cil-description',
+  },
 ]

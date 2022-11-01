@@ -11,10 +11,10 @@ import DocsExample from '@/components/DocsExample'
 
 import axios from 'axios'
 const myApi = axios.create({
-    withCredentials: true, 
-  })
+  withCredentials: true,
+})
 
-store.state.myApi = myApi;
+store.state.myApi = myApi
 
 const app = createApp(App)
 app.use(store)

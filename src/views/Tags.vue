@@ -1,23 +1,19 @@
 <template>
   <div>
-    <AddPostModal
-      :visible="formVisible"
-      :formData="formData"
-      :mode="formMode"
-    />
+    <AddTagModal :visible="formVisible" :formData="formData" :mode="formMode" />
     <Table
       :fields="tableFieldNames"
       :postData="get"
       :actions="dataActions"
       :rows="rows"
       editMode="form"
-      name="Посты"
+      name="Теги"
     />
   </div>
 </template>
 
 <script>
-import AddPostModal from '@/components/AddPostModal.vue'
+import AddTagModal from '@/components/AddTagModal.vue'
 import Table from '@/components/Table.vue'
 import eventBus from '../eventBus'
 
@@ -29,10 +25,9 @@ const myApi = axios.create({
 export default {
   name: 'Posts',
   components: {
-    AddPostModal,
+    AddTagModal,
     Table,
   },
-  props: ['tag', 'project'],
   data() {
     return {
       myApi: myApi,
@@ -40,71 +35,48 @@ export default {
       formData: {},
       rows: [],
       dataActions: {
-        //"Комментарии": { action: (id) => { this.$router.push(`/posts/${id}/comments`) }, color: "primary" },
-        Изменить: { action: this.change, color: 'warning' },
+        Посты: { action: this.routeToPosts, color: 'primary' },
         Удалить: { action: this.delete, color: 'danger' },
       },
       tableFieldNames: [
         {
-          name: 'title',
+          name: 'name',
           title: 'Название',
         },
         {
-          name: 'text',
-          title: 'Текст',
-        },
-        {
-          name: 'publication_date',
-          title: 'Дата добавления',
+          name: 'description',
+          title: 'Описание',
         },
       ],
     }
   },
   created() {
-    eventBus.$on('addNewPost', (formData) => {
+    eventBus.$on('addNewTag', () => {
       this.formMode = 'new'
-      this.formData = {
-        project_name: this.$route.params.projectName,
-        tags_array: this.$route.params.tag
-          ? new Set([this.$route.params.tag])
-          : new Set(),
-      }
       this.formVisible = true
     })
     eventBus.$on('closeModal', () => {
       this.formVisible = false
       this.formData = {}
     })
-    eventBus.$on('postAdded', () => {
+    eventBus.$on('tagAdded', () => {
       this.formVisible = false
-      //this.rows.unshift(this.formData)
       this.get()
-      this.formData = {}
-    })
-    eventBus.$on('postEdited', () => {
-      this.formVisible = false
       this.formData = {}
     })
   },
   methods: {
     change(elObj) {
       this.formVisible = true
-      elObj.tags_array = new Set(elObj.tags_array)
       this.formData = elObj
-      console.log(elObj)
       this.formMode = 'edit'
     },
     get(take, page) {
-      console.log(this.tag)
       return myApi
-        .get('http://127.0.0.1:3000/api/posts/', {
+        .get('http://127.0.0.1:3000/api/tags/', {
           params: {
             take: take ?? 10,
             page: page ?? 1,
-            tagsArray: this.$route.params.tag
-              ? [this.$route.params.tag]
-              : undefined,
-            projectName: this.$route.params.projectName,
           },
         })
         .then((res) => {
@@ -118,20 +90,24 @@ export default {
         })
     },
     delete(item) {
+
       const result = confirm('Вы действительно хотите удалить пользователя?')
       if (result)
         return myApi
-          .delete('http://127.0.0.1:3000/api/admin/posts/', {
-            data: { id: item.id },
+          .delete('http://127.0.0.1:3000/api/admin/tags/', {
+            data: { name: item.name },
           })
-          .then((res) => {
+          .then(() => {
             this.get()
             //this.rows = this.rows.filter((el) => el.id !== id)
             //alert('Пользователь удален')
           })
-          .catch((error) => {
+          .catch(() => {
             alert('Сервер не отвечает')
           })
+    },
+    routeToPosts(item) {
+      this.$router.push('/posts/tag/' + item.name)
     },
   },
 }

@@ -48,8 +48,8 @@
 <script>
 import axios from 'axios'
 const myApi = axios.create({
-    withCredentials: true, 
-  })
+  withCredentials: true,
+})
 
 export default {
   name: 'Login',
@@ -61,17 +61,18 @@ export default {
       iscorrect: '',
     }
   },
-  methods:{
+  methods: {
     callAuth() {
-      
+      const requestAddr = this.$store.state.restAddr + 'login'
       if (this.iscorrect) this.iscorrect = false
       if (this.login && this.password) {
         this.isempty = false
-        myApi.post('http://127.0.0.1:3000/api/admin/login/', {
+        myApi
+          .post(requestAddr, {
             email: this.login,
             password: this.password,
         }).then((res)=>{
-          this.$router.push('/exchangers')
+          this.$router.push('/posts')
         })
         .catch((error) => {
           alert("Неверные данные")

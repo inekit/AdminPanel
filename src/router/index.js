@@ -29,12 +29,34 @@ const routes = [
         path: '/posts',
         name: 'Posts',
         component: () => import('@/views/Posts.vue'),
+        children: [
+          {
+            path: '/posts/tag/:tag',
+            name: 'PostsByTag',
+            props: true,
+            component: () => import('@/views/Posts.vue'),
+            children: [],
+          },
+          {
+            path: '/posts/project/:projectName',
+            name: 'PostsByProject',
+            props: true,
+            component: () => import('@/views/Posts.vue'),
+            children: [],
+          },
+        ],
+      },
+      {
+        path: '/tags',
+        name: 'Tags',
+        component: () => import('@/views/Tags.vue'),
         children: [],
       },
       {
-        path: '/posts/:id/comments',
-        name: 'Comments',
-        component: () => import('@/views/Comments.vue'),
+        path: '/projects',
+        name: 'Projects',
+        component: () => import('@/views/Projects.vue'),
+        children: [],
       },
       {
         path: '/theme',
